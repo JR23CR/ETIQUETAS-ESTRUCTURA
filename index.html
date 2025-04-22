@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Etiquetas Responsivas con Tamaño</title>
+  <!-- Librerías -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <!-- Incluir jsPDF y html2canvas -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
@@ -15,21 +15,24 @@
     .controls {
       margin-bottom: 20px;
     }
+    .controls button {
+      margin-left: 10px;
+    }
     .etiquetas-container {
       display: flex;
       flex-wrap: wrap;
       gap: 20px;
     }
-    .etiqueta { 
-      background-color: #fff; 
-      border: 1px solid #000; 
-      box-sizing: border-box; 
-      padding: 8px; 
-      display: flex; 
-      flex-direction: column; 
-      justify-content: space-between; 
-      page-break-inside: avoid; 
-      overflow: hidden; 
+    .etiqueta {
+      background-color: #fff;
+      border: 1px solid #000;
+      box-sizing: border-box;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      page-break-inside: avoid;
+      overflow: hidden;
     }
     .etiqueta table {
       width: 100%;
@@ -45,21 +48,19 @@
       word-wrap: break-word;
       font-size: inherit;
     }
-    .bold {
-      font-weight: bold;
-    }
+    .bold { font-weight: bold; }
     button.print-button {
-      width: 100px;
-      height: 100px;
+      width: 40px;
+      height: 40px;
+      vertical-align: middle;
     }
-    span.print-icon, span.print-icon::before, span.print-icon::after, button.print-button:hover .print-icon::after {
+    .pdf-button {
+      padding: 8px 12px;
+    }
+    /* Icono de impresión (sin cambios) */
+    span.print-icon, span.print-icon::before, span.print-icon::after,
+    button.print-button:hover .print-icon::after {
       border: solid 4px #333;
-    }
-    span.print-icon::after {
-      border-width: 2px;
-    }
-    button.print-button {}
-    span.print-icon, span.print-icon::before, span.print-icon::after, button.print-button:hover .print-icon::after {
       box-sizing: border-box;
       background-color: #fff;
     }
@@ -89,7 +90,6 @@
       left: 12%;
       right: 12%;
       height: 0%;
-      background: #fff;
       background-repeat: no-repeat;
       background-size: 70% 90%;
       background-position: center;
@@ -105,9 +105,7 @@
       );
       transition: height .2s, border-width 0s .2s, width 0s .2s;
     }
-    button.print-button:hover {
-      cursor: pointer;
-    }
+    button.print-button:hover { cursor: pointer; }
     button.print-button:hover .print-icon::before {
       height:0px;
       transition: height .2s;
@@ -116,53 +114,35 @@
       height:120%;
       transition: height .2s .15s, border-width 0s .16s;
     }
+
+    /* Estilos para impresión en papel */
     @media print {
       @page {
-        size: 6in 4in landscape; /* Ajusta el tamaño de página para etiquetas 6x4 */
+        size: 6in 4in landscape;
         margin: 0;
       }
-      body {
-        display: block; /* Asegura que todo se muestre al imprimir */
-      }
-      .etiquetas-container {
-        display: block !important; /* Garantiza que las etiquetas se muestren correctamente */
-        visibility: visible;
-        page-break-before: always; /* Asegura que cada etiqueta esté en su propia página */
-      }
+      body { display: block; }
+      .etiquetas-container { display: block !important; page-break-before: always; }
       .etiqueta {
         page-break-after: always;
-        width: 432px; /* Asegura que las etiquetas sean del tamaño adecuado */
-        height: 288px; /* Tamaño para etiquetas 6x4 */
+        width: 432px;
+        height: 288px;
         margin: 10px auto;
-        font-size: 18px; /* Ajusta el tamaño de fuente */
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        border: 1px solid black;
-        box-sizing: border-box;
-        padding: 8px;
+        font-size: 18px;
       }
-      .etiqueta table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-      .etiqueta td {
-        border: 1px solid #000;
-        padding: 4px;
-        text-align: center;
-        vertical-align: middle;
-      }
-      .bold {
-        font-weight: bold;
-      }
+      .etiqueta table { width: 100%; border-collapse: collapse; }
+      .etiqueta td { border: 1px solid #000; padding: 4px; }
     }
   </style>
 </head>
 <body style="background-color: #b1bd90;">
-  <div class="page-main-header_page-main-header-wrapper__erb0_" style="background-color:#D2B48C"><div class=""></div></div>
-  <h2>GENERADOR DE ETIQUETAS PARA ESTRUCTURA</h2><img src="https://www.gibor.com/sites/default/files/logo-giborv2.png" alt="Logo" style="position: absolute; top: 0; right: 0;">
+  <div class="page-main-header_page-main-header-wrapper__erb0_" style="background-color:#D2B48C">
+    <div></div>
+  </div>
+  <h2>GENERADOR DE ETIQUETAS PARA ESTRUCTURA</h2>
+  <img src="https://www.gibor.com/sites/default/files/logo-giborv2.png" alt="Logo" style="position: absolute; top: 0; right: 0;">
   <div class="controls" id="controles">
-    <input type="file" id="fileInput" accept=".xlsx, .xls" />
+    <input type="file" id="fileInput" accept=".xlsx, .xls">
     <select id="sizeSelector">
       <option value="small">Pequeña</option>
       <option value="medium" selected>Mediana</option>
@@ -171,16 +151,15 @@
     </select>
     <button onclick="generarEtiquetas()">Generar Etiquetas</button>
     <button class="print-button" onclick="window.print()"><span class="print-icon"></span></button>
+    <button class="pdf-button" id="pdfButton">Exportar a PDF</button>
   </div>
-
   <div id="mensajeError" style="color:red;"></div>
-</body>
-<body style="background-color: #b1bd81;">
-<div id="etiquetas" class="etiquetas-container"></div>
+  <div id="etiquetas" class="etiquetas-container">
+    <!-- Aquí se injectan las etiquetas -->
+  </div>
 
   <script>
     let excelData = null;
-
     document.getElementById('fileInput').addEventListener('change', function(e) {
       const file = e.target.files[0];
       const reader = new FileReader();
@@ -202,9 +181,9 @@
       const size = document.getElementById("sizeSelector").value;
       const contenedor = document.getElementById("etiquetas");
       contenedor.innerHTML = '';
-
       if (!excelData) return alert("Primero cargue un archivo Excel válido.");
 
+      // Títulos fijos desde celdas C6 y A7
       const textoC6 = excelData[1]?.[2] || '—';
       const textoA7 = excelData[2]?.[0] || '—';
 
@@ -224,7 +203,6 @@
           currentEtiqueta = { paquete, ML: 0, piezas: [], largos: [] };
           etiquetas.push(currentEtiqueta);
         }
-
         currentEtiqueta.ML += ML;
         currentEtiqueta.piezas.push(...piezas);
         currentEtiqueta.largos.push(...largos);
@@ -245,7 +223,7 @@
         const base = sizeBase[size];
         const fontSize = Math.max(14, base.baseFont - Math.floor(maxRows / 3));
         const height = size === 'label' ? `${base.height}px` : 'auto';
-        div.setAttribute('style', `width: ${base.width}px; height: ${height}; font-size: ${fontSize}px; display: flex; flex-direction: column; justify-content: space-between;`);
+        div.style = `width: ${base.width}px; height: ${height}; font-size: ${fontSize}px; display: flex; flex-direction: column; justify-content: space-between;`;
 
         let rows = '';
         for (let i = 0; i < maxRows; i++) {
@@ -264,10 +242,39 @@
             ${rows}
           </table>
         `;
-
         contenedor.appendChild(div);
       });
     }
+
+    // Función para exportar a PDF (4×3 pulgadas => 288×216 pt)
+    async function exportPDF() {
+  if (!excelData) return alert("Primero genera las etiquetas.");
+  const { jsPDF } = window.jspdf;
+  const etiquetas = Array.from(document.querySelectorAll('.etiqueta'));
+  if (etiquetas.length === 0) return alert("No hay etiquetas para exportar.");
+
+  // Creamos el PDF en modo landscape 4x3 pulgadas (288×216 pt)
+  const pdf = new jsPDF({
+    orientation: 'landscape',
+    unit: 'pt',
+    format: [288, 216]
+  });
+
+  for (let i = 0; i < etiquetas.length; i++) {
+    const etiqueta = etiquetas[i];
+    const canvas = await html2canvas(etiqueta);
+    const imgData = canvas.toDataURL('image/png');
+    pdf.addImage(imgData, 'PNG', 0, 0, 288, 216);
+    if (i < etiquetas.length - 1) {
+      // cada nueva página en landscape 4×3
+      pdf.addPage([288, 216], 'landscape');
+    }
+  }
+  pdf.save('etiquetas.pdf');
+}
+
+
+    document.getElementById('pdfButton').addEventListener('click', exportPDF);
   </script>
 </body>
 </html>
